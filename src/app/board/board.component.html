@@ -1,0 +1,46 @@
+<div class="board-container">
+  <h1 class="board-title">Kanban Board</h1>
+
+  <div class="board-columns">
+    @for (column of columns; track column.id) {
+      <div class="board-column">
+        <div class="column-header">
+          <span class="column-title">{{ column.title }}</span>
+          <span class="column-count">{{ getColumnCards(column.id).length }}</span>
+        </div>
+
+        <div
+          cdkDropList
+          [id]="column.id"
+          [cdkDropListData]="getColumnCards(column.id)"
+          [cdkDropListConnectedTo]="getConnectedLists(column.id)"
+          class="column-list"
+          (cdkDropListDropped)="onDrop($event)"
+        >
+          @for (card of getColumnCards(column.id); track card.id) {
+            <div class="card" cdkDrag>
+              <div class="card-header">
+                <span class="card-title">{{ card.title }}</span>
+                <div class="card-actions">
+                  <button mat-icon-button (click)="openCardDetail(card)" aria-label="Card info">
+                    <mat-icon>info</mat-icon>
+                  </button>
+                  <button mat-icon-button (click)="deleteCard(card)" aria-label="Delete card">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+              </div>
+              @if (card.description) {
+                <p class="card-description">{{ card.description }}</p>
+              }
+            </div>
+          }
+
+          <button mat-stroked-button class="add-card-btn" (click)="openAddCard(column.id)">
+            <mat-icon>add</mat-icon> Add Card
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+</div>
