@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS cards (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   title TEXT NOT NULL,
   description TEXT DEFAULT '',
-  column TEXT NOT NULL CHECK (column IN ('backlog', 'in_progress', 'testing', 'done')),
+  "column" TEXT NOT NULL CHECK ("column" IN ('backlog', 'in_progress', 'testing', 'done')),
   position INTEGER NOT NULL DEFAULT 0,
   created_at TIMESTAMPTZ DEFAULT now()
 );
@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS card_history (
   moved_at TIMESTAMPTZ DEFAULT now()
 );
 
-CREATE INDEX IF NOT EXISTS idx_cards_column ON cards(column);
+CREATE INDEX IF NOT EXISTS idx_cards_column ON cards("column");
 CREATE INDEX IF NOT EXISTS idx_cards_position ON cards(position);
 CREATE INDEX IF NOT EXISTS idx_card_history_card_id ON card_history(card_id);
 

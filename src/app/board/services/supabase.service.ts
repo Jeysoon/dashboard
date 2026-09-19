@@ -8,8 +8,8 @@ export class SupabaseService {
 
   constructor() {
     this.supabase = createClient(
-      'https://xpyklrtzgfkabpiobzpk.supabase.co',
-      'sb_publishable_eskiqLfF7E6MliCwQ5IVUg_Cp2EV-JP',
+      'https://gmurxgqvdflkifzyqtjj.supabase.co',
+      'sb_publishable_p82rk11E55tR73V1pWi7mQ_ROJTAf7U',
     );
   }
 
