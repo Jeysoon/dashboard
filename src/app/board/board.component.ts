@@ -72,6 +72,8 @@ export class BoardComponent implements OnInit {
         event.currentIndex,
       );
 
+      card.column = toColumn;
+      await this.supabase.updateCardColumn(card.id, toColumn, event.currentIndex);
       await this.supabase.addHistoryEntry(card.id, fromColumn, toColumn);
       await this.reorderCards(fromColumn);
       await this.reorderCards(toColumn);
