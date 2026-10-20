@@ -122,6 +122,40 @@
   gap: 4px;
 }
 
+// Same palette as the Worked / Requested tags in the table
+.stat {
+  border-left: 4px solid;
+
+  &.worked {
+    background: #e8f5e9;
+    border-color: #2e7d32;
+    color: #2e7d32;
+  }
+
+  &.requested {
+    background: #fff3e0;
+    border-color: #e65100;
+    color: #e65100;
+  }
+
+  &.balance-stat {
+    background: #e3f2fd;
+    border-color: #1565c0;
+    color: #1565c0;
+
+    &.negative {
+      background: #ffebee;
+      border-color: #c62828;
+      color: #c62828;
+    }
+  }
+
+  .stat-label {
+    color: inherit;
+    opacity: 0.85;
+  }
+}
+
 .stat-label {
   font-size: 12px;
   color: #757575;
