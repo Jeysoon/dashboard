@@ -10,6 +10,8 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { OvertimeEntry, OvertimeKind, TeamMember } from './extra-hours.model';
 import { ExtraHoursService } from './extra-hours.service';
+import { MatDialog } from '@angular/material/dialog';
+import { confirmDialog } from '../confirm-dialog/confirm-dialog.component';
 
 interface MemberSummary {
   member: TeamMember;
@@ -65,7 +67,10 @@ export class ExtraHoursComponent implements OnInit {
   entryHours: number | null = null;
   entryNote = '';
 
-  constructor(private service: ExtraHoursService) {}
+  constructor(
+    private service: ExtraHoursService,
+    private dialog: MatDialog,
+  ) {}
 
   async ngOnInit(): Promise<void> {
     const [members, entries] = await Promise.all([
@@ -87,7 +92,11 @@ export class ExtraHoursComponent implements OnInit {
   }
 
   async deleteMember(member: TeamMember): Promise<void> {
-    if (!confirm(`Delete ${member.name} and all their extra hours records?`)) return;
+    const confirmed = await confirmDialog(this.dialog, {
+      title: 'Delete team member',
+      message: `Delete ${member.name} and all their extra hours records? This cannot be undone.`,
+    });
+    if (!confirmed) return;
     await this.service.deleteMember(member.id);
     this.members.update((list) => list.filter((m) => m.id !== member.id));
     this.entries.update((list) => list.filter((e) => e.member_id !== member.id));
@@ -114,7 +123,11 @@ export class ExtraHoursComponent implements OnInit {
   }
 
   async deleteEntry(entry: OvertimeEntry): Promise<void> {
-    if (!confirm('Delete this record?')) return;
+    const confirmed = await confirmDialog(this.dialog, {
+      title: 'Delete record',
+      message: 'Delete this extra hours record? This cannot be undone.',
+    });
+    if (!confirmed) return;
     await this.service.deleteEntry(entry.id);
     this.entries.update((list) => list.filter((e) => e.id !== entry.id));
   }

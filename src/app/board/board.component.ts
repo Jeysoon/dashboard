@@ -8,6 +8,7 @@ import { COLUMNS } from './models/column.model';
 import { SupabaseService } from './services/supabase.service';
 import { CardDetailDialogComponent } from './card-detail-dialog/card-detail-dialog.component';
 import { AddCardDialogComponent } from './add-card-dialog/add-card-dialog.component';
+import { confirmDialog } from '../confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-board',
@@ -131,6 +132,11 @@ export class BoardComponent implements OnInit {
   }
 
   async deleteCard(card: Card): Promise<void> {
+    const confirmed = await confirmDialog(this.dialog, {
+      title: 'Delete card',
+      message: `Delete "${card.title}"? Its movement history will be deleted too. This cannot be undone.`,
+    });
+    if (!confirmed) return;
     await this.supabase.deleteCard(card.id);
     await this.loadCards();
   }
