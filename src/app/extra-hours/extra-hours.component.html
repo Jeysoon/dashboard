@@ -71,7 +71,16 @@
           </mat-form-field>
           <mat-form-field appearance="outline" subscriptSizing="dynamic">
             <mat-label>{{ entryKind === 'worked' ? 'Date worked' : 'Date requested' }}</mat-label>
-            <input matInput type="date" name="date" [(ngModel)]="entryDate" required />
+            <input
+              matInput
+              [matDatepicker]="picker"
+              name="date"
+              [(ngModel)]="entryDate"
+              (click)="picker.open()"
+              required
+            />
+            <mat-datepicker-toggle matIconSuffix [for]="picker" />
+            <mat-datepicker #picker />
           </mat-form-field>
           <mat-form-field appearance="outline" subscriptSizing="dynamic">
             <mat-label>Hours</mat-label>

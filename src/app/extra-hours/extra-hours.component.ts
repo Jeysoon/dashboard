@@ -6,6 +6,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { provideNativeDateAdapter } from '@angular/material/core';
 import { OvertimeEntry, OvertimeKind, TeamMember } from './extra-hours.model';
 import { ExtraHoursService } from './extra-hours.service';
 
@@ -27,7 +29,9 @@ interface MemberSummary {
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
+    MatDatepickerModule,
   ],
+  providers: [provideNativeDateAdapter()],
   templateUrl: './extra-hours.component.html',
   styleUrl: './extra-hours.component.scss',
 })
@@ -57,7 +61,7 @@ export class ExtraHoursComponent implements OnInit {
 
   newMemberName = '';
   entryKind: OvertimeKind = 'worked';
-  entryDate = today();
+  entryDate: Date | null = new Date();
   entryHours: number | null = null;
   entryNote = '';
 
@@ -101,7 +105,7 @@ export class ExtraHoursComponent implements OnInit {
       member_id: memberId,
       kind: this.entryKind,
       hours: this.entryHours!,
-      date: this.entryDate,
+      date: toDateString(this.entryDate!),
       note: this.entryNote.trim(),
     });
     this.entries.update((list) => [entry, ...list].sort((a, b) => b.date.localeCompare(a.date)));
@@ -116,8 +120,8 @@ export class ExtraHoursComponent implements OnInit {
   }
 }
 
-function today(): string {
-  const d = new Date();
+// Local calendar date as YYYY-MM-DD, matching the DATE column
+function toDateString(d: Date): string {
   const pad = (n: number) => String(n).padStart(2, '0');
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 }
