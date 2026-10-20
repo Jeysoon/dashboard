@@ -32,13 +32,32 @@
   min-width: 0;
 }
 
-.add-member,
-.add-entry {
+.add-member {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
   gap: 8px;
   margin-bottom: 16px;
+}
+
+// Type | Date | Hours on the first row, Note + Add below
+.add-entry {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+
+  .mat-mdc-form-field {
+    width: 100%;
+  }
+}
+
+.note-field {
+  grid-column: span 2;
+}
+
+.add-entry-btn {
+  justify-self: end;
 }
 
 .empty {
@@ -163,5 +182,15 @@
 @media (max-width: 800px) {
   .layout {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .add-entry {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .note-field {
+    grid-column: auto;
   }
 }

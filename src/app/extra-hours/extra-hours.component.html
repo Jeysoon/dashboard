@@ -94,11 +94,13 @@
               required
             />
           </mat-form-field>
-          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="grow">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="note-field">
             <mat-label>Note</mat-label>
             <input matInput name="note" [(ngModel)]="entryNote" placeholder="Optional" />
           </mat-form-field>
-          <button mat-flat-button type="submit" [disabled]="!canAddEntry()">Add</button>
+          <button mat-flat-button type="submit" class="add-entry-btn" [disabled]="!canAddEntry()">
+            Add
+          </button>
         </form>
 
         @if (selectedEntries().length === 0) {
