@@ -1,0 +1,136 @@
+<div class="page">
+  <h1 class="page-title">Extra Hours</h1>
+
+  <div class="layout">
+    <section class="panel members">
+      <h2 class="panel-title">Team</h2>
+
+      <form class="add-member" (ngSubmit)="addMember()">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="grow">
+          <mat-label>New member</mat-label>
+          <input matInput name="name" [(ngModel)]="newMemberName" placeholder="Name" />
+        </mat-form-field>
+        <button mat-flat-button type="submit" [disabled]="!newMemberName.trim()">Add</button>
+      </form>
+
+      @if (summaries().length === 0) {
+        <p class="empty">No team members yet.</p>
+      } @else {
+        <ul class="member-list">
+          @for (s of summaries(); track s.member.id) {
+            <li
+              class="member"
+              [class.active]="s.member.id === selectedId()"
+              (click)="selectedId.set(s.member.id)"
+              (keydown.enter)="selectedId.set(s.member.id)"
+              tabindex="0"
+            >
+              <span class="member-name">{{ s.member.name }}</span>
+              <span class="balance" [class.negative]="s.balance < 0">
+                {{ s.balance | number: '1.0-2' }} h
+              </span>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+
+    <section class="panel detail">
+      @if (selected(); as s) {
+        <div class="detail-header">
+          <h2 class="panel-title">{{ s.member.name }}</h2>
+          <button mat-icon-button (click)="deleteMember(s.member)" aria-label="Delete member">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+
+        <div class="stats">
+          <div class="stat">
+            <span class="stat-label">Worked</span>
+            <span class="stat-value">{{ s.worked | number: '1.0-2' }} h</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">Requested</span>
+            <span class="stat-value">{{ s.requested | number: '1.0-2' }} h</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">Balance</span>
+            <span class="stat-value" [class.negative]="s.balance < 0">
+              {{ s.balance | number: '1.0-2' }} h
+            </span>
+          </div>
+        </div>
+
+        <form class="add-entry" (ngSubmit)="addEntry()">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <mat-label>Type</mat-label>
+            <mat-select name="kind" [(ngModel)]="entryKind">
+              <mat-option value="worked">Extra hours worked</mat-option>
+              <mat-option value="requested">Time off requested</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <mat-label>{{ entryKind === 'worked' ? 'Date worked' : 'Date requested' }}</mat-label>
+            <input matInput type="date" name="date" [(ngModel)]="entryDate" required />
+          </mat-form-field>
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <mat-label>Hours</mat-label>
+            <input
+              matInput
+              type="number"
+              name="hours"
+              min="0.25"
+              step="0.25"
+              [(ngModel)]="entryHours"
+              required
+            />
+          </mat-form-field>
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="grow">
+            <mat-label>Note</mat-label>
+            <input matInput name="note" [(ngModel)]="entryNote" placeholder="Optional" />
+          </mat-form-field>
+          <button mat-flat-button type="submit" [disabled]="!canAddEntry()">Add</button>
+        </form>
+
+        @if (selectedEntries().length === 0) {
+          <p class="empty">No records yet.</p>
+        } @else {
+          <table class="entries">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Type</th>
+                <th class="num">Hours</th>
+                <th>Note</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (e of selectedEntries(); track e.id) {
+                <tr>
+                  <td>{{ e.date | date: 'mediumDate' }}</td>
+                  <td>
+                    <span class="kind" [class.requested]="e.kind === 'requested'">
+                      {{ e.kind === 'worked' ? 'Worked' : 'Requested' }}
+                    </span>
+                  </td>
+                  <td class="num">
+                    {{ e.kind === 'worked' ? '+' : '−' }}{{ e.hours | number: '1.0-2' }}
+                  </td>
+                  <td class="note">{{ e.note }}</td>
+                  <td class="actions">
+                    <button mat-icon-button (click)="deleteEntry(e)" aria-label="Delete record">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        }
+      } @else {
+        <p class="empty">Add a team member to start tracking extra hours.</p>
+      }
+    </section>
+  </div>
+</div>

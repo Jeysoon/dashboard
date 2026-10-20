@@ -1,17 +1,10 @@
 import { Injectable } from '@angular/core';
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { Card, CardHistory, KanbanColumn } from '../models/card.model';
+import { supabase } from '../../supabase-client';
 
 @Injectable({ providedIn: 'root' })
 export class SupabaseService {
-  private supabase: SupabaseClient;
-
-  constructor() {
-    this.supabase = createClient(
-      'https://gmurxgqvdflkifzyqtjj.supabase.co',
-      'sb_publishable_p82rk11E55tR73V1pWi7mQ_ROJTAf7U',
-    );
-  }
+  private supabase = supabase;
 
   async getCards(): Promise<Card[]> {
     const { data, error } = await this.supabase
@@ -30,6 +23,14 @@ export class SupabaseService {
       .single();
     if (error) throw error;
     return data;
+  }
+
+  async updateCard(
+    cardId: string,
+    changes: Pick<Card, 'title' | 'description'>,
+  ): Promise<void> {
+    const { error } = await this.supabase.from('cards').update(changes).eq('id', cardId);
+    if (error) throw error;
   }
 
   async updateCardColumn(
@@ -80,4 +81,5 @@ export class SupabaseService {
     });
     if (error) throw error;
   }
+
 }

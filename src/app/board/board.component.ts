@@ -114,6 +114,22 @@ export class BoardComponent implements OnInit {
     });
   }
 
+  openEditCard(card: Card): void {
+    const dialogRef = this.dialog.open(AddCardDialogComponent, {
+      data: { title: card.title, description: card.description },
+      width: '400px',
+    });
+
+    dialogRef.afterClosed().subscribe(async (result) => {
+      if (!result) return;
+      await this.supabase.updateCard(card.id, {
+        title: result.title,
+        description: result.description,
+      });
+      await this.loadCards();
+    });
+  }
+
   async deleteCard(card: Card): Promise<void> {
     await this.supabase.deleteCard(card.id);
     await this.loadCards();

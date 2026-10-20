@@ -7,21 +7,21 @@
 
   <div class="detail-meta">
     <p><strong>Created:</strong> {{ card.created_at | date:'medium' }}</p>
-    <p><strong>Current column:</strong> {{ card.column | titlecase }}</p>
+    <p><strong>Current column:</strong> {{ columnTitle(card.column) }}</p>
   </div>
 
   <h3 class="history-title">Movement History</h3>
 
-  @if (history.length === 0) {
+  @if (history().length === 0) {
     <p class="no-history">No movement history yet.</p>
   } @else {
     <div class="timeline">
-      @for (entry of history; track entry.id) {
+      @for (entry of history(); track entry.id) {
         <div class="timeline-item">
           <div class="timeline-dot"></div>
           <div class="timeline-content">
             <span class="timeline-action">
-              {{ entry.from_column | titlecase }} → {{ entry.to_column | titlecase }}
+              {{ columnTitle(entry.from_column) }} → {{ columnTitle(entry.to_column) }}
             </span>
             <span class="timeline-date">{{ entry.moved_at | date:'medium' }}</span>
           </div>

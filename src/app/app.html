@@ -1,2 +1,51 @@
+<mat-sidenav-container class="shell" autosize>
+  <mat-sidenav mode="side" opened class="sidenav" [class.expanded]="expanded()">
+    <div class="sidenav-header">
+      <button
+        mat-icon-button
+        (click)="expanded.set(!expanded())"
+        [attr.aria-label]="expanded() ? 'Collapse menu' : 'Expand menu'"
+        [attr.aria-expanded]="expanded()"
+      >
+        <mat-icon>{{ expanded() ? 'menu_open' : 'menu' }}</mat-icon>
+      </button>
+      @if (expanded()) {
+        <span class="brand">Dashboard</span>
+      }
+    </div>
+    <mat-nav-list>
+      <a
+        mat-list-item
+        routerLink="/board"
+        routerLinkActive
+        #board="routerLinkActive"
+        [activated]="board.isActive"
+        [attr.title]="expanded() ? null : 'Cards'"
+        aria-label="Cards"
+      >
+        <mat-icon matListItemIcon>view_kanban</mat-icon>
+        @if (expanded()) {
+          <span matListItemTitle>Cards</span>
+        }
+      </a>
+      <a
+        mat-list-item
+        routerLink="/extra-hours"
+        routerLinkActive
+        #hours="routerLinkActive"
+        [activated]="hours.isActive"
+        [attr.title]="expanded() ? null : 'Extra Hours'"
+        aria-label="Extra Hours"
+      >
+        <mat-icon matListItemIcon>schedule</mat-icon>
+        @if (expanded()) {
+          <span matListItemTitle>Extra Hours</span>
+        }
+      </a>
+    </mat-nav-list>
+  </mat-sidenav>
 
-<router-outlet />
+  <mat-sidenav-content>
+    <router-outlet />
+  </mat-sidenav-content>
+</mat-sidenav-container>

@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { MatDialogRef } from '@angular/material/dialog';
+import { Component, Inject, Optional } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -15,8 +15,17 @@ import { MatDialogModule } from '@angular/material/dialog';
 export class AddCardDialogComponent {
   title = '';
   description = '';
+  readonly isEdit: boolean;
 
-  constructor(private dialogRef: MatDialogRef<AddCardDialogComponent>) {}
+  // Pass the current values to open the dialog in edit mode
+  constructor(
+    private dialogRef: MatDialogRef<AddCardDialogComponent>,
+    @Optional() @Inject(MAT_DIALOG_DATA) data: { title: string; description: string } | null,
+  ) {
+    this.isEdit = !!data;
+    this.title = data?.title ?? '';
+    this.description = data?.description ?? '';
+  }
 
   submit(): void {
     if (!this.title.trim()) return;

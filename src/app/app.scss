@@ -1,0 +1,27 @@
+.shell {
+  height: 100%;
+}
+
+.sidenav {
+  width: 64px;
+  overflow-x: hidden;
+  transition: width 200ms ease;
+
+  &.expanded {
+    width: 220px;
+  }
+}
+
+.sidenav-header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 56px;
+  padding: 0 8px;
+}
+
+.brand {
+  font-size: 18px;
+  font-weight: 500;
+  white-space: nowrap;
+}
