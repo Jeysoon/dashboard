@@ -55,3 +55,76 @@ CREATE TABLE IF NOT EXISTS overtime_entries (
 );
 
 CREATE INDEX IF NOT EXISTS idx_overtime_entries_member_id ON overtime_entries(member_id);
+
+-- ============================================================
+-- Auth: only administrators can read or change data
+-- Safe to re-run. Replaces every existing policy on app tables.
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS public.admins (
+  user_id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- SECURITY DEFINER so policies can check admins without exposing the table
+CREATE OR REPLACE FUNCTION public.is_admin()
+RETURNS BOOLEAN
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = ''
+AS $$
+  SELECT EXISTS (SELECT 1 FROM public.admins WHERE user_id = auth.uid());
+$$;
+
+REVOKE EXECUTE ON FUNCTION public.is_admin() FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.is_admin() TO authenticated;
+
+-- Drop old policies (including the earlier open ones)
+DO $$
+DECLARE
+  p RECORD;
+BEGIN
+  FOR p IN
+    SELECT policyname, tablename FROM pg_policies
+    WHERE schemaname = 'public'
+      AND tablename IN ('admins', 'cards', 'card_history', 'team_members', 'overtime_entries')
+  LOOP
+    EXECUTE format('DROP POLICY %I ON public.%I', p.policyname, p.tablename);
+  END LOOP;
+END $$;
+
+ALTER TABLE public.admins ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.cards ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.card_history ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.team_members ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.overtime_entries ENABLE ROW LEVEL SECURITY;
+
+-- A signed-in user may only see whether they themselves are an admin.
+-- No write policies: admins are managed from the SQL editor only.
+CREATE POLICY "Read own admin row" ON public.admins
+  FOR SELECT TO authenticated USING (user_id = auth.uid());
+
+CREATE POLICY "Admins manage cards" ON public.cards
+  FOR ALL TO authenticated USING (public.is_admin()) WITH CHECK (public.is_admin());
+
+-- History is append-only: no update or delete policies
+CREATE POLICY "Admins read card history" ON public.card_history
+  FOR SELECT TO authenticated USING (public.is_admin());
+CREATE POLICY "Admins add card history" ON public.card_history
+  FOR INSERT TO authenticated WITH CHECK (public.is_admin());
+
+CREATE POLICY "Admins manage team members" ON public.team_members
+  FOR ALL TO authenticated USING (public.is_admin()) WITH CHECK (public.is_admin());
+
+CREATE POLICY "Admins manage overtime entries" ON public.overtime_entries
+  FOR ALL TO authenticated USING (public.is_admin()) WITH CHECK (public.is_admin());
+
+-- Runs as the caller, so the cards policies above still apply
+REVOKE EXECUTE ON FUNCTION public.update_card_positions(JSONB) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.update_card_positions(JSONB) TO authenticated;
+
+-- Grant admin access (create the users first in Authentication > Users):
+-- INSERT INTO public.admins (user_id)
+-- SELECT id FROM auth.users WHERE email IN ('admin1@example.com', 'admin2@example.com')
+-- ON CONFLICT DO NOTHING;

@@ -1,5 +1,6 @@
 <mat-sidenav-container class="shell" autosize>
   <mat-sidenav mode="side" opened class="sidenav" [class.expanded]="expanded()">
+    <div class="sidenav-body">
     <div class="sidenav-header">
       <button
         mat-icon-button
@@ -43,6 +44,24 @@
         }
       </a>
     </mat-nav-list>
+
+    <mat-nav-list class="bottom">
+      <a
+        mat-list-item
+        (click)="auth.signOut()"
+        [attr.title]="expanded() ? null : 'Sign out'"
+        aria-label="Sign out"
+      >
+        <mat-icon matListItemIcon>logout</mat-icon>
+        @if (expanded()) {
+          <span matListItemTitle>Sign out</span>
+        }
+        @if (expanded()) {
+          <span matListItemLine>{{ auth.user()?.email }}</span>
+        }
+      </a>
+    </mat-nav-list>
+    </div>
   </mat-sidenav>
 
   <mat-sidenav-content>

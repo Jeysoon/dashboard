@@ -25,3 +25,13 @@
   font-weight: 500;
   white-space: nowrap;
 }
+
+.sidenav-body {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.bottom {
+  margin-top: auto;
+}
